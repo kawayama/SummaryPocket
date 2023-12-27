@@ -1,5 +1,6 @@
 import datetime
 import os
+import site
 
 import dotenv
 
@@ -13,6 +14,7 @@ from summary_pocket import (
 
 dotenv.load_dotenv()
 
+CHATGPT_MAX_LENGTH = 4000
 UNCATEGORIZED_NAME = os.environ['NOTION_UNCATEGORIZED_NAME']
 
 
@@ -28,10 +30,13 @@ def main():
         )
         return
 
+    # TODO: 要約済みの記事は除外する
     for article in pocket.get_unread_articles():
         try:
             # Webサイトの情報を取得
             site_info = website.get_site_info(article.url)
+            if len(site_info.content) >= CHATGPT_MAX_LENGTH:
+                site_info.content = site_info.content[:CHATGPT_MAX_LENGTH]
 
             # ChatGPTを使って要約
             categories = notion.get_categories()
