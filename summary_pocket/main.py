@@ -1,6 +1,5 @@
 import datetime
 import os
-import site
 
 import dotenv
 
@@ -30,12 +29,19 @@ def main():
         )
         return
 
-    # TODO: 要約済みの記事は除外する
+    url_set = notion.get_urls()
     for article in pocket.get_unread_articles():
+        if article.url in url_set:
+            continue
+
         try:
             # Webサイトの情報を取得
             site_info = website.get_site_info(article.url)
-            if len(site_info.content) >= CHATGPT_MAX_LENGTH:
+            if site_info.url in url_set:
+                # Pocketから削除
+                pocket.archive_article(article.id)
+                continue
+            elif len(site_info.content) >= CHATGPT_MAX_LENGTH:
                 site_info.content = site_info.content[:CHATGPT_MAX_LENGTH]
 
             # ChatGPTを使って要約
@@ -47,13 +53,11 @@ def main():
             # Notionに保存
             notion.save(
                 notion.NotionItem(
-                    title=article.title,
-                    url=article.url,
+                    title=site_info.title,
+                    url=site_info.url,
                     category=response.category,
                     summary=response.summary,
-                    fetched_at=datetime.datetime.now(
-                        datetime.timezone(datetime.timedelta(hours=9), 'JST')
-                    ),
+                    fetched_at=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9), 'JST')),
                 )
             )
 
@@ -66,6 +70,7 @@ def main():
                 channel='#notify',
             )
         except Exception as e:
+            # Slackに通知
             notification.notify_to_slack(
                 content=f"Error ({article.url}): {e}",
                 channel='#error',

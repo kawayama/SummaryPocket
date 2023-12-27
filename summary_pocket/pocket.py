@@ -40,6 +40,37 @@ class PocketArticle(BaseModel):
     state: ArticleState
 
 
+def get_archive_articles() -> List[PocketArticle]:
+    """アーカイブ済みの記事をすべて取得する
+
+    - 追加日が古い順に取得する
+
+    Returns:
+        List[PocketArticle]: アーカイブ済みの記事のリスト
+    """
+    r = requests.get(
+        'https://getpocket.com/v3/get',
+        params={
+            'consumer_key': CONSUMER_KEY,
+            'access_token': ACCESS_TOKEN,
+            'state': 'archive',
+            'sort': 'oldest',
+        },
+    )
+    r.raise_for_status()
+    j = r.json()
+
+    return [
+        PocketArticle(
+            id=item['item_id'],
+            title=item['given_title'],
+            url=item['given_url'],
+            state=ArticleState.ARCHIVED,
+        )
+        for item in j['list'].values()
+    ]
+
+
 def get_unread_articles() -> List[PocketArticle]:
     """未読の記事をすべて取得する
 

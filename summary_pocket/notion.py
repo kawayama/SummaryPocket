@@ -50,6 +50,19 @@ def check_db():
     assert properties['fetched_at']['type'] == 'date'
 
 
+def get_urls() -> set[str]:
+    """Notionの対象DBに保存されている記事のURLをすべて取得する
+
+    Returns:
+        set[str]: 記事のURLのリスト
+    """
+    client = _get_client()
+    db = client.databases.query(database_id=NOTION_DB_ID)
+    if type(db) is not dict:
+        raise ValueError('DBの情報が正しくありません')
+    return {item['properties']['url']['url'] for item in db['results'] if item['properties']['url']['url'] is not None}
+
+
 def get_categories() -> set[str]:
     """Notionの対象DBに保存されているカテゴリをすべて取得する
 
