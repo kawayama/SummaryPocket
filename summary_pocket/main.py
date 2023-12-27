@@ -49,7 +49,7 @@ def main() -> None:
             logger.info(f"Already summarized: {article.url}")
             continue
         elif article.url in error_url_set:
-            logger.info(f"Error url: {article.url}")
+            logger.info(f"Skip error url: {article.url}")
             continue
 
         try:
