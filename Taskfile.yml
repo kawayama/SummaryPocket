@@ -1,0 +1,20 @@
+version: '3'
+tasks:
+  build-image:
+    cmds: 
+      - docker build -t summary-pocket-image -f Dockerfile .
+  run:
+    cmds: 
+      - >
+        docker run -d
+        -v ${PWD}:/app
+        --name summary-pocket
+        summary-pocket-image
+        /bin/bash -c "poetry install --only main &&
+        python summary_pocket/main.py {{.FETCH_NUM}}"
+    deps:
+      - build-image
+    args:
+      - name: FETCH_NUM
+        desc: "Number of articles to fetch"
+        default: ''
