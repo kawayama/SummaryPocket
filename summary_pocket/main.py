@@ -42,14 +42,14 @@ def main() -> None:
     articles = pocket.get_unread_articles()
 
     for article in articles:
-        logger.info(f'Start summarizing: {article.url}')
+        logger.info(f"Start summarizing: {article.url}")
         if article.url in url_set:
             # Pocketから削除
             pocket.archive_article(article.id)
-            logger.info(f'Already summarized: {article.url}')
+            logger.info(f"Already summarized: {article.url}")
             continue
         elif article.url in error_url_set:
-            logger.info(f'Error url: {article.url}')
+            logger.info(f"Error url: {article.url}")
             continue
 
         try:
@@ -58,7 +58,7 @@ def main() -> None:
             if site_info.url in url_set:
                 # Pocketから削除
                 pocket.archive_article(article.id)
-                logger.info(f'Already summarized: {article.url}')
+                logger.info(f"Already summarized: {article.url}")
                 continue
             elif len(site_info.content) >= CHATGPT_MAX_LENGTH:
                 site_info.content = site_info.content[:CHATGPT_MAX_LENGTH]

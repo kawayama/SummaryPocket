@@ -1,48 +1,41 @@
 {
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": false,
-    "editor.formatOnType": false,
-    "editor.formatOnSaveMode": "file",
-    "editor.rulers": [
-        120
-    ],
-    "files.exclude": {
-        "**/.pytest_cache": true,
-        "**/__pycache__": true,
-        "**/.ruff_cache": true
-    },
-    "[python]": {
-        "editor.defaultFormatter": "charliermarsh.ruff",
-        "editor.codeActionsOnSave": {
-            "source.fixAll": "explicit",
-            "source.organizeImports": "explicit"
-        }
-    },
-    "ruff.lint.args": [
-        "--preview"
-    ],
-    "ruff.format.args": [
-        "--preview"
-    ],
-    "todo-tree.filtering.excludeGlobs": [
-        "**/.venv/*/**"
-    ],
-    "python.analysis.autoImportCompletions": true,
-    "cSpell.enabled": true,
-    "cSpell.words": [
-        "chromedriver",
-        "cmds",
-        "direnv",
-        "dotenv",
-        "GPTAPI",
-        "mypy",
-        "openai",
-        "pydantic",
-        "pydocstyle",
-        "pypackages",
-        "pytest",
-        "pytype",
-        "UNCATEGORIZED",
-        "venv"
-    ]
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "editor.formatOnSaveMode": "file",
+  "editor.rulers": [120],
+  "files.exclude": {
+    "**/.pytest_cache": true,
+    "**/__pycache__": true,
+    "**/.ruff_cache": true
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    }
+  },
+  "ruff.lint.args": ["--preview"],
+  "ruff.format.args": ["--preview"],
+  "todo-tree.filtering.excludeGlobs": ["**/.venv/*/**"],
+  "python.analysis.autoImportCompletions": true,
+  "cSpell.enabled": true,
+  "cSpell.words": [
+    "chromedriver",
+    "cmds",
+    "direnv",
+    "dotenv",
+    "GPTAPI",
+    "levelname",
+    "mypy",
+    "openai",
+    "pydantic",
+    "pydocstyle",
+    "pypackages",
+    "pytest",
+    "pytype",
+    "UNCATEGORIZED",
+    "venv"
+  ]
 }

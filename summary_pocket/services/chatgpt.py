@@ -50,7 +50,7 @@ def summarize(title: str, content: str, categories: set[str]) -> ChatGPTResponse
     response = _execute(client, prompt)
     result_str = _get_first_choice_str(response)
     if result_str is None:
-        raise Exception("ChatGPT result is None")
+        raise Exception('ChatGPT result is None')
 
     j = json.loads(result_str)
 
@@ -87,7 +87,7 @@ def retry_wrapper(func):
     """
 
     def wrapper(*args, **kwargs):
-        error = Exception("Retry error")
+        error = Exception('Retry error')
         for _ in range(RETRY_NUM):
             try:
                 value = func(*args, **kwargs)
