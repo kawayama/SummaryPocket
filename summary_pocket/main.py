@@ -110,8 +110,8 @@ if __name__ == '__main__':
         try:
             main()
 
-            # 1回の起動ごとに10分待機
-            time.sleep(10 * 60)
+            # 1回の起動ごとに1分待機
+            time.sleep(1 * 60)
         except Exception as e:
             notification_util.notify_to_slack(
                 content=f"Error occurred and application stopped: {e}",
