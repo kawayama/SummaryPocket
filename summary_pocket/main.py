@@ -8,6 +8,7 @@ import dotenv
 
 from summary_pocket.services import chatgpt, notion, pocket, website
 from summary_pocket.utils import (
+    error_url_util,
     logger_util,
     notification_util,
 )
@@ -35,6 +36,7 @@ def main() -> None:
         return
 
     url_set = notion.get_urls()
+    error_url_set = error_url_util.get_error_urls()
 
     # Pocketから未読記事を取得
     articles = pocket.get_unread_articles()
@@ -45,6 +47,9 @@ def main() -> None:
             # Pocketから削除
             pocket.archive_article(article.id)
             logger.info(f'Already summarized: {article.url}')
+            continue
+        elif article.url in error_url_set:
+            logger.info(f'Error url: {article.url}')
             continue
 
         try:
@@ -92,6 +97,9 @@ def main() -> None:
                 content=f"Error ({article.url}): {e}",
                 channel='#error',
             )
+
+            # エラーが発生したURLを保存
+            error_url_util.add_error_url(article.url)
 
 
 if __name__ == '__main__':
