@@ -1,6 +1,7 @@
+import json
 import os
 
-from summary_pocket.utils import requests_util
+import requests
 
 SLACK_API_URL = 'https://hooks.slack.com/services'
 SLACK_API_KEY = os.environ['SLACK_API_KEY']
@@ -21,9 +22,9 @@ def notify_to_slack(content: str, channel: str = '#error') -> bool:
         APIに関する資料: https://api.slack.com/messaging/webhooks
     """
     assert channel.startswith('#')
-    full_url = SLACK_API_URL + SLACK_API_KEY
+    url = SLACK_API_URL + SLACK_API_KEY
     data = {'text': content, 'channel': channel}
-    r = requests_util.post(full_url, data=data)
+    r = requests.post(url, data=json.dumps(data), timeout=60)
     is_succeeded = r.status_code == 200 if r is not None else False
 
     return is_succeeded

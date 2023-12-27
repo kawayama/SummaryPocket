@@ -2,6 +2,7 @@ import argparse
 import datetime
 import logging
 import os
+import time
 
 import dotenv
 
@@ -38,12 +39,11 @@ def main() -> None:
     # Pocketから未読記事を取得
     articles = pocket.get_unread_articles()
 
-    # FIXME
-    articles = articles[:3]
-
     for article in articles:
         logger.info(f'Start summarizing: {article.url}')
         if article.url in url_set:
+            # Pocketから削除
+            pocket.archive_article(article.id)
             logger.info(f'Already summarized: {article.url}')
             continue
 
@@ -98,4 +98,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Pocketから未読記事を取得し、ChatGPTで要約して、Notionに保存するツール'
     )
-    main()
+    while True:
+        try:
+            main()
+
+            # 1回の起動ごとに10分待機
+            time.sleep(10 * 60)
+        except Exception as e:
+            notification_util.notify_to_slack(
+                content=f"Error occurred and application stopped: {e}",
+                channel='#error',
+            )

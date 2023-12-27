@@ -1,12 +1,11 @@
-import json
 import os
 from enum import Enum
+from platform import java_ver
 from typing import List
 
 import dotenv
+import pocket as pocket_api
 from pydantic import BaseModel, Field
-
-from summary_pocket.utils import requests_util
 
 dotenv.load_dotenv()
 
@@ -50,19 +49,9 @@ def get_archive_articles() -> List[PocketArticle]:
     Returns:
         List[PocketArticle]: アーカイブ済みの記事のリスト
     """
-    r = requests_util.get(
-        'https://getpocket.com/v3/get',
-        params={
-            'consumer_key': CONSUMER_KEY,
-            'access_token': ACCESS_TOKEN,
-            'state': 'archive',
-            'sort': 'oldest',
-        },
-    )
-    if r is None:
-        raise Exception('Error (Pocket API): Response is None')
-
-    j = r.json()
+    client = _get_client()
+    response: tuple[dict, dict] = client.get(state='archive', sort='oldest')  # type: ignore
+    j = response[0]
 
     return [
         PocketArticle(
@@ -83,19 +72,9 @@ def get_unread_articles() -> List[PocketArticle]:
     Returns:
         List[PocketArticle]: 未読の記事のリスト
     """
-    r = requests_util.get(
-        'https://getpocket.com/v3/get',
-        params={
-            'consumer_key': CONSUMER_KEY,
-            'access_token': ACCESS_TOKEN,
-            'state': 'unread',
-            'sort': 'oldest',
-        },
-    )
-    if r is None:
-        raise Exception('Error (Pocket API): Response is None')
-
-    j = r.json()
+    client = _get_client()
+    response: tuple[dict, dict] = client.get(state='unread', sort='oldest')  # type: ignore
+    j = response[0]
 
     return [
         PocketArticle(
@@ -114,18 +93,12 @@ def archive_article(item_id: str):
     Args:
         item_id (str): 記事のID
     """
-    r = requests_util.post(
-        'https://getpocket.com/v3/send',
-        data={
-            'consumer_key': CONSUMER_KEY,
-            'access_token': ACCESS_TOKEN,
-            'actions': [
-                {
-                    'action': 'archive',
-                    'item_id': item_id,
-                }
-            ],
-        },
+    client = _get_client()
+    client.archive(item_id, wait=False)
+
+
+def _get_client() -> pocket_api.Pocket:
+    return pocket_api.Pocket(
+        consumer_key=CONSUMER_KEY,
+        access_token=ACCESS_TOKEN,
     )
-    if r is None:
-        raise Exception('Error (Pocket API): Response is None')
