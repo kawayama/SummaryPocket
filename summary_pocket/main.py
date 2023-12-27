@@ -8,6 +8,7 @@ import dotenv
 
 from summary_pocket.services import chatgpt, notion, pocket, website
 from summary_pocket.utils import (
+    error_url_util,
     logger_util,
     notification_util,
 )
@@ -35,16 +36,20 @@ def main() -> None:
         return
 
     url_set = notion.get_urls()
+    error_url_set = error_url_util.get_error_urls()
 
     # Pocketから未読記事を取得
     articles = pocket.get_unread_articles()
 
     for article in articles:
-        logger.info(f'Start summarizing: {article.url}')
+        logger.info(f"Start summarizing: {article.url}")
         if article.url in url_set:
             # Pocketから削除
             pocket.archive_article(article.id)
-            logger.info(f'Already summarized: {article.url}')
+            logger.info(f"Already summarized: {article.url}")
+            continue
+        elif article.url in error_url_set:
+            logger.info(f"Skip error url: {article.url}")
             continue
 
         try:
@@ -53,7 +58,7 @@ def main() -> None:
             if site_info.url in url_set:
                 # Pocketから削除
                 pocket.archive_article(article.id)
-                logger.info(f'Already summarized: {article.url}')
+                logger.info(f"Already summarized: {article.url}")
                 continue
             elif len(site_info.content) >= CHATGPT_MAX_LENGTH:
                 site_info.content = site_info.content[:CHATGPT_MAX_LENGTH]
@@ -93,6 +98,9 @@ def main() -> None:
                 channel='#error',
             )
 
+            # エラーが発生したURLを保存
+            error_url_util.add_error_url(article.url)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -102,10 +110,11 @@ if __name__ == '__main__':
         try:
             main()
 
-            # 1回の起動ごとに10分待機
-            time.sleep(10 * 60)
+            # 1回の起動ごとに1分待機
+            time.sleep(1 * 60)
         except Exception as e:
             notification_util.notify_to_slack(
                 content=f"Error occurred and application stopped: {e}",
                 channel='#error',
             )
+            break

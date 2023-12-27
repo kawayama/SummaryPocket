@@ -1,6 +1,5 @@
 import os
 from enum import Enum
-from platform import java_ver
 from typing import List
 
 import dotenv
@@ -41,29 +40,6 @@ class PocketArticle(BaseModel):
     state: ArticleState
 
 
-def get_archive_articles() -> List[PocketArticle]:
-    """アーカイブ済みの記事をすべて取得する
-
-    - 追加日が古い順に取得する
-
-    Returns:
-        List[PocketArticle]: アーカイブ済みの記事のリスト
-    """
-    client = _get_client()
-    response: tuple[dict, dict] = client.get(state='archive', sort='oldest')  # type: ignore
-    j = response[0]
-
-    return [
-        PocketArticle(
-            id=item['item_id'],
-            title=item['given_title'],
-            url=item['given_url'],
-            state=ArticleState.ARCHIVED,
-        )
-        for item in j['list'].values()
-    ]
-
-
 def get_unread_articles() -> List[PocketArticle]:
     """未読の記事をすべて取得する
 
@@ -75,6 +51,9 @@ def get_unread_articles() -> List[PocketArticle]:
     client = _get_client()
     response: tuple[dict, dict] = client.get(state='unread', sort='oldest')  # type: ignore
     j = response[0]
+
+    if type(j['list']) is list:
+        return []
 
     return [
         PocketArticle(
