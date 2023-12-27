@@ -18,3 +18,11 @@ tasks:
       - name: FETCH_NUM
         desc: "Number of articles to fetch"
         default: ''
+  logs:
+    cmds:
+      - docker logs -f summary-pocket
+  remove:
+    aliases: [rm]
+    cmds:
+      - docker stop summary-pocket
+      - docker rm summary-pocket
