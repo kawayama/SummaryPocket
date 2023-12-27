@@ -1,4 +1,10 @@
+import contextlib
+import time
+from typing import Generator
+
+import undetected_chromedriver as uc
 from pydantic import BaseModel
+from selenium.webdriver.common.by import By
 
 
 class SiteInfo(BaseModel):
@@ -21,7 +27,47 @@ def get_site_info(url: str) -> SiteInfo:
     Args:
         url (str): URL
 
+    Raises:
+        WebDriverException: Selenium関連のエラー
+
     Returns:
         SiteInfo: Webサイトの情報
+
+    Note:
+        - リダイレクト後のサイト情報を取得する
     """
-    raise NotImplementedError
+    with get_driver() as driver:
+        driver.get(url)
+        body_ele = driver.find_element(By.CSS_SELECTOR, 'body')
+
+        # TODO: ここの待機時間は要調整、できればwaitを使いたい
+        time.sleep(10)
+
+        return SiteInfo(
+            title=driver.title,
+            url=driver.current_url,
+            content=body_ele.text,
+        )
+
+
+@contextlib.contextmanager
+def get_driver() -> Generator[uc.Chrome, None, None]:
+    """undetected_chromedriverのChromeドライバーを取得する
+
+    - ドライバーの取得から終了までを行う
+
+    Yields:
+        Generator[uc.Chrome, None, None]: undetected_chromedriverのChromeドライバー
+    """
+    driver = None
+    try:
+        options = uc.options.ChromeOptions()
+        options.add_argument('--disable-dev-shm-usage')
+        driver = uc.Chrome(headless=True, use_subprocess=False, options=options, version_main=119)
+        yield driver
+    finally:
+        try:
+            if driver is not None:
+                driver.quit()
+        except Exception:
+            pass
