@@ -1,14 +1,64 @@
 [tool.poetry]
-name = "summarypocket"
+name = "summary-pocket"
 version = "0.1.0"
 description = ""
 authors = ["kawayama <kawa130307@gmail.com>"]
 readme = "README.md"
+packages = [{include = "summary_pocket"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+requests = "^2.31.0"
+python-dotenv = "^1.0.0"
+pydantic = "^2.5.2"
 
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.0.0"
+pytest = "^7.4.3"
+ruff = "^0.1.9"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "__init__.py"
+]
+
+line-length = 120
+select = ["E", "F", "W", "I", "D"]
+ignore = [
+    "E402", # Ignore __init__.py files
+    "D100",
+    "D400",
+    "D415"
+]
+
+[tool.ruff.format]
+quote-style = "preserve"
+
+[tool.ruff.pydocstyle]
+convention = "google"
