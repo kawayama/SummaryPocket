@@ -1,4 +1,4 @@
-from summary_pocket import chatgpt
+from summary_pocket.services import chatgpt
 
 
 def test__generate_prompt():

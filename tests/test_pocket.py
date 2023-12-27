@@ -1,4 +1,4 @@
-from summary_pocket import pocket
+from summary_pocket.services import pocket
 
 
 def test_get_archive_articles():

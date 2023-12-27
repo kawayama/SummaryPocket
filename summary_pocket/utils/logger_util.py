@@ -7,7 +7,7 @@ def setting_logger(logger):
     Args:
         logger (_type_): ロガー
     """
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter("%(asctime)s %(levelname)8s %(module)15s %(message)s")
 

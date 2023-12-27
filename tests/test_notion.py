@@ -1,6 +1,6 @@
 import datetime
 
-from summary_pocket import notion
+from summary_pocket.services import notion
 
 
 def test_check_db():

@@ -1,7 +1,6 @@
-import json
 import os
 
-import requests
+from summary_pocket.utils import requests_util
 
 SLACK_API_URL = 'https://hooks.slack.com/services'
 SLACK_API_KEY = os.environ['SLACK_API_KEY']
@@ -24,7 +23,7 @@ def notify_to_slack(content: str, channel: str = '#error') -> bool:
     assert channel.startswith('#')
     full_url = SLACK_API_URL + SLACK_API_KEY
     data = {'text': content, 'channel': channel}
-    r = requests.post(full_url, data=json.dumps(data))
-    is_succeeded = r.status_code == 200
+    r = requests_util.post(full_url, data=data)
+    is_succeeded = r.status_code == 200 if r is not None else False
 
     return is_succeeded

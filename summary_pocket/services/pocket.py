@@ -1,10 +1,12 @@
+import json
 import os
 from enum import Enum
 from typing import List
 
 import dotenv
-import requests
 from pydantic import BaseModel, Field
+
+from summary_pocket.utils import requests_util
 
 dotenv.load_dotenv()
 
@@ -48,7 +50,7 @@ def get_archive_articles() -> List[PocketArticle]:
     Returns:
         List[PocketArticle]: アーカイブ済みの記事のリスト
     """
-    r = requests.get(
+    r = requests_util.get(
         'https://getpocket.com/v3/get',
         params={
             'consumer_key': CONSUMER_KEY,
@@ -57,7 +59,9 @@ def get_archive_articles() -> List[PocketArticle]:
             'sort': 'oldest',
         },
     )
-    r.raise_for_status()
+    if r is None:
+        raise Exception('Error (Pocket API): Response is None')
+
     j = r.json()
 
     return [
@@ -79,7 +83,7 @@ def get_unread_articles() -> List[PocketArticle]:
     Returns:
         List[PocketArticle]: 未読の記事のリスト
     """
-    r = requests.get(
+    r = requests_util.get(
         'https://getpocket.com/v3/get',
         params={
             'consumer_key': CONSUMER_KEY,
@@ -88,7 +92,9 @@ def get_unread_articles() -> List[PocketArticle]:
             'sort': 'oldest',
         },
     )
-    r.raise_for_status()
+    if r is None:
+        raise Exception('Error (Pocket API): Response is None')
+
     j = r.json()
 
     return [
@@ -108,9 +114,9 @@ def archive_article(item_id: str):
     Args:
         item_id (str): 記事のID
     """
-    r = requests.post(
+    r = requests_util.post(
         'https://getpocket.com/v3/send',
-        json={
+        data={
             'consumer_key': CONSUMER_KEY,
             'access_token': ACCESS_TOKEN,
             'actions': [
@@ -121,4 +127,5 @@ def archive_article(item_id: str):
             ],
         },
     )
-    r.raise_for_status()
+    if r is None:
+        raise Exception('Error (Pocket API): Response is None')

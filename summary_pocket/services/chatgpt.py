@@ -52,8 +52,6 @@ def summarize(title: str, content: str, categories: set[str]) -> ChatGPTResponse
     if result_str is None:
         raise Exception("ChatGPT result is None")
 
-    print(result_str)
-
     j = json.loads(result_str)
 
     return ChatGPTResponse(

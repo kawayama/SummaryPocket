@@ -1,4 +1,4 @@
-from summary_pocket import website
+from summary_pocket.services import website
 
 
 def test_get_site_info_1():
