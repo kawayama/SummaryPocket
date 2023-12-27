@@ -30,6 +30,7 @@
     "python.analysis.autoImportCompletions": true,
     "cSpell.enabled": true,
     "cSpell.words": [
+        "chromedriver",
         "direnv",
         "dotenv",
         "mypy",
@@ -38,6 +39,7 @@
         "pypackages",
         "pytest",
         "pytype",
+        "UNCATEGORIZED",
         "venv"
     ]
 }

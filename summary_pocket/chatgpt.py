@@ -7,21 +7,19 @@ class ChatGPTResponse(BaseModel):
     Attributes:
         category (str): カテゴリ
         summary (str): 要約
-        importance (int): 重要度 (1-3)
     """
 
     category: str
     summary: str
-    importance: int
 
 
-def summarize(title: str, content: str, categories: list[str]) -> ChatGPTResponse:
+def summarize(title: str, content: str, categories: set[str]) -> ChatGPTResponse:
     """ChatGPTで要約する
 
     Args:
         title (str): Webサイトのタイトル
         content (str): Webサイトの本文
-        categories (list[str]): カテゴリのリスト
+        categories (set[str]): カテゴリのリスト
 
     Returns:
         ChatGPTResponse: 要約結果

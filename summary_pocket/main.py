@@ -1,4 +1,7 @@
 import datetime
+import os
+
+import dotenv
 
 from summary_pocket import (
     chatgpt,
@@ -8,9 +11,23 @@ from summary_pocket import (
     website,
 )
 
+dotenv.load_dotenv()
+
+UNCATEGORIZED_NAME = os.environ['NOTION_UNCATEGORIZED_NAME']
+
 
 def main():
     """Pocketから未読記事を取得し、ChatGPTで要約して、Notionに保存する"""
+    try:
+        # NotionのDBの形式が正しいかチェック
+        notion.check_db()
+    except Exception as e:
+        notification.notify_to_slack(
+            content=f"Error (Notion DB): {e}",
+            channel='error',
+        )
+        return
+
     for article in pocket.get_unread_articles():
         try:
             # Webサイトの情報を取得
@@ -20,7 +37,7 @@ def main():
             categories = notion.get_categories()
             response = chatgpt.summarize(site_info.title, site_info.content, categories)
             if response.category not in categories:
-                notion.add_category(response.category)
+                response.category = UNCATEGORIZED_NAME
 
             # Notionに保存
             notion.save(
@@ -29,8 +46,9 @@ def main():
                     url=article.url,
                     category=response.category,
                     summary=response.summary,
-                    importance=response.importance,
-                    fetched_at=datetime.datetime.now(),
+                    fetched_at=datetime.datetime.now(
+                        datetime.timezone(datetime.timedelta(hours=9), 'JST')
+                    ),
                 )
             )
 

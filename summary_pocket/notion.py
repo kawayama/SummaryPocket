@@ -1,9 +1,14 @@
 import datetime
+import os
 
 import dotenv
+import notion_client
 from pydantic import BaseModel, Field
 
 dotenv.load_dotenv()
+
+NOTION_TOKEN = os.environ['NOTION_TOKEN']
+NOTION_DB_ID = os.environ['NOTION_DB_ID']
 
 
 class NotionItem(BaseModel):
@@ -15,7 +20,6 @@ class NotionItem(BaseModel):
         url (str): 記事のURL
         category (str): 記事のカテゴリ
         summary (str): 記事の要約
-        importance (int): 記事の重要度 (1-3)
         fetched_at (datetime.datetime): 取得日時
     """
 
@@ -24,26 +28,39 @@ class NotionItem(BaseModel):
     url: str = Field(min_length=1)
     category: str = Field(min_length=1)
     summary: str = Field(min_length=1)
-    importance: int = Field(ge=1, le=3)
     fetched_at: datetime.datetime
 
 
-def get_categories() -> list[str]:
+def check_db():
+    """DBの情報が正しいかチェックする
+
+    Raises:
+        AssertionError: DBの情報が正しくない場合
+    """
+    client = _get_client()
+    db = client.databases.retrieve(NOTION_DB_ID)
+    assert type(db) is dict
+    properties = db['properties']
+    assert set(properties.keys()) == {'is_read', 'title', 'url', 'category', 'summary', 'fetched_at'}
+    assert properties['is_read']['type'] == 'checkbox'
+    assert properties['title']['type'] == 'title'
+    assert properties['url']['type'] == 'url'
+    assert properties['category']['type'] == 'select'
+    assert properties['summary']['type'] == 'rich_text'
+    assert properties['fetched_at']['type'] == 'date'
+
+
+def get_categories() -> set[str]:
     """Notionの対象DBに保存されているカテゴリをすべて取得する
 
     Returns:
-        list[str]: カテゴリのリスト
+        set[str]: カテゴリのリスト
     """
-    raise NotImplementedError
-
-
-def add_category(category: str) -> None:
-    """Notionの対象DBにカテゴリを追加する
-
-    Args:
-        category (str): 追加するカテゴリ
-    """
-    raise NotImplementedError
+    client = _get_client()
+    db = client.databases.retrieve(NOTION_DB_ID)
+    if type(db) is not dict:
+        raise ValueError('DBの情報が正しくありません')
+    return {item['name'] for item in db['properties']['category']['select']['options']}
 
 
 def save(item: NotionItem) -> None:
@@ -52,4 +69,54 @@ def save(item: NotionItem) -> None:
     Args:
         item (NotionItem): 保存する記事
     """
-    raise NotImplementedError
+    client = _get_client()
+    client.pages.create(
+        parent={
+            'database_id': NOTION_DB_ID,
+        },
+        properties={
+            'is_read': {
+                'checkbox': item.is_read,
+            },
+            'title': {
+                'title': [
+                    {
+                        'text': {
+                            'content': item.title,
+                        },
+                    },
+                ],
+            },
+            'url': {
+                'url': item.url,
+            },
+            'category': {
+                'select': {
+                    'name': item.category,
+                },
+            },
+            'summary': {
+                'rich_text': [
+                    {
+                        'text': {
+                            'content': item.summary,
+                        },
+                    },
+                ],
+            },
+            'fetched_at': {
+                'date': {
+                    'start': item.fetched_at.isoformat(),
+                },
+            },
+        },
+    )
+
+
+def _get_client() -> notion_client.Client:
+    """Notionのクライアントを取得する
+
+    Returns:
+        notion_client.Client: Notionのクライアント
+    """
+    return notion_client.Client(auth=NOTION_TOKEN)
