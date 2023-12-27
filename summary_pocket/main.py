@@ -26,7 +26,7 @@ def main():
     except Exception as e:
         notification.notify_to_slack(
             content=f"Error (Notion DB): {e}",
-            channel='error',
+            channel='#error',
         )
         return
 
@@ -62,13 +62,13 @@ def main():
 
             # Slackに通知
             notification.notify_to_slack(
-                content=f"Success ({article.url})",
-                channel='notify',
+                content=f"記事が要約されました！\nurl: {article.url}",
+                channel='#notify',
             )
         except Exception as e:
             notification.notify_to_slack(
                 content=f"Error ({article.url}): {e}",
-                channel='error',
+                channel='#error',
             )
 
 
