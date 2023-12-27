@@ -76,6 +76,9 @@ def get_unread_articles() -> List[PocketArticle]:
     response: tuple[dict, dict] = client.get(state='unread', sort='oldest')  # type: ignore
     j = response[0]
 
+    if type(j['list']) is list:
+        return []
+
     return [
         PocketArticle(
             id=item['item_id'],
