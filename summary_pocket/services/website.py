@@ -63,7 +63,7 @@ def get_driver() -> Generator[uc.Chrome, None, None]:
     try:
         options = uc.options.ChromeOptions()
         options.add_argument('--disable-dev-shm-usage')
-        driver = uc.Chrome(headless=True, use_subprocess=False, options=options, version_main=119)
+        driver = uc.Chrome(headless=True, use_subprocess=False, options=options, version_main=120)
         yield driver
     finally:
         try:
