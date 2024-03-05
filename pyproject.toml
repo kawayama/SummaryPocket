@@ -16,6 +16,13 @@ undetected-chromedriver = "^3.5.4"
 notion-client = "^2.2.0"
 openai = "^1.6.1"
 pocket = "^0.3.6"
+langchain = "^0.1.10"
+langchain-community = "^0.0.25"
+langchainhub = "^0.1.15"
+langchain-openai = "^0.0.8"
+chromadb = "^0.4.24"
+bs4 = "^0.0.2"
+streamlit = "^1.31.1"
 
 
 [tool.poetry.group.dev.dependencies]

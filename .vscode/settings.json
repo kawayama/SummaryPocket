@@ -3,7 +3,9 @@
   "editor.formatOnPaste": false,
   "editor.formatOnType": false,
   "editor.formatOnSaveMode": "file",
-  "editor.rulers": [120],
+  "editor.rulers": [
+    120
+  ],
   "files.exclude": {
     "**/.pytest_cache": true,
     "**/__pycache__": true,
@@ -16,17 +18,27 @@
       "source.organizeImports": "explicit"
     }
   },
-  "ruff.lint.args": ["--preview"],
-  "ruff.format.args": ["--preview"],
-  "todo-tree.filtering.excludeGlobs": ["**/.venv/*/**"],
+  "ruff.lint.args": [
+    "--preview"
+  ],
+  "ruff.format.args": [
+    "--preview"
+  ],
+  "todo-tree.filtering.excludeGlobs": [
+    "**/.venv/*/**"
+  ],
   "python.analysis.autoImportCompletions": true,
   "cSpell.enabled": true,
   "cSpell.words": [
+    "chromadb",
     "chromedriver",
     "cmds",
     "direnv",
+    "docstore",
     "dotenv",
     "GPTAPI",
+    "langchain",
+    "langchainhub",
     "levelname",
     "mypy",
     "openai",
@@ -35,7 +47,10 @@
     "pypackages",
     "pytest",
     "pytype",
+    "streamlit",
     "UNCATEGORIZED",
+    "vectorstore",
+    "vectorstores",
     "venv"
   ]
 }

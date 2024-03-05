@@ -26,3 +26,18 @@ tasks:
     cmds:
       - docker stop summary-pocket
       - docker rm summary-pocket
+  run-app:
+    cmds:
+      - >
+        docker run -d
+        -v ${PWD}:/app
+        --name summary-pocket
+        -p 8501:8501
+        summary-pocket-image
+        /bin/bash -c "poetry install --only main &&
+        poetry run streamlit run summary_pocket/app.py
+    deps:
+      - build-image
+  run-app-local:
+    cmds:
+      - poetry run streamlit run summary_pocket/app.py
