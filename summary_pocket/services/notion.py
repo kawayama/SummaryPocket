@@ -3,6 +3,7 @@ import os
 
 import dotenv
 import notion_client
+from notion_client import helpers
 from pydantic import BaseModel, Field
 
 dotenv.load_dotenv()
@@ -57,10 +58,10 @@ def get_urls() -> set[str]:
         set[str]: 記事のURLのリスト
     """
     client = _get_client()
-    db = client.databases.query(database_id=NOTION_DB_ID)
-    if type(db) is not dict:
+    items = helpers.collect_paginated_api(client.databases.query, database_id=NOTION_DB_ID)
+    if type(items) is not list[dict]:
         raise ValueError('DBの情報が正しくありません')
-    return {item['properties']['url']['url'] for item in db['results'] if item['properties']['url']['url'] is not None}
+    return {item['properties']['url']['url'] for item in items if item['properties']['url']['url'] is not None}
 
 
 def get_categories() -> set[str]:
