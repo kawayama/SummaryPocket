@@ -59,8 +59,6 @@ def get_urls() -> set[str]:
     """
     client = _get_client()
     items = helpers.collect_paginated_api(client.databases.query, database_id=NOTION_DB_ID)
-    if type(items) is not list[dict]:
-        raise ValueError('DBの情報が正しくありません')
     return {item['properties']['url']['url'] for item in items if item['properties']['url']['url'] is not None}
 
 
