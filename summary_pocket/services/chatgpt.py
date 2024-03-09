@@ -10,7 +10,7 @@ from pydantic import BaseModel
 dotenv.load_dotenv()
 
 RETRY_NUM = 10
-GPT_MODEL_NAME = 'gpt-4-turbo-preview'
+GPT_MODEL_NAME = 'gpt-4-1106-preview'
 PROMPT_PATH = 'data/prompt.txt'
 OPENAI_API_TOKEN = os.environ['OPENAI_API_TOKEN']
 OPENAI_API_ORGANIZATION = os.environ['OPENAI_API_ORGANIZATION']
@@ -56,7 +56,7 @@ def summarize(title: str, content: str, categories: set[str]) -> ChatGPTResponse
 
     return ChatGPTResponse(
         category=j['category'],
-        summary=j['summary'][0],
+        summary=j['summary'],
     )
 
 
