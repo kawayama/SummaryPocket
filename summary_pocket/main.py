@@ -117,4 +117,3 @@ if __name__ == '__main__':
                 content=f"Error occurred and application stopped: {e}",
                 channel='#error',
             )
-            break
