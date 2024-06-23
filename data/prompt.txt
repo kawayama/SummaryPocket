@@ -3,7 +3,7 @@
 ### 制限 ###
 リスポンスは必ず以下のキーを含んだJSON形式で出力してください。
 - category: str (記事のカテゴリをカテゴリ一覧の中から1つ選んでください)
-- summary: str (markdown形式の箇条書きで3点を出力してください)
+- summary: str (markdown形式の箇条書きで3点を1つの文字列で出力してください)
 
 ### カテゴリ一覧 ###
 ${categories}
@@ -11,3 +11,10 @@ ${categories}
 ### 入力 ###
 Title: ${title}
 Content: ${content}
+
+### 出力 ###
+{
+  "category": "記事のカテゴリをカテゴリ一覧の中から1つ選んでください",
+  "summary": "markdown形式の箇条書きで3点を1つの文字列で出力してください"
+}
+

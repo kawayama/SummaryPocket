@@ -26,3 +26,6 @@ tasks:
     cmds:
       - docker stop summary-pocket
       - docker rm summary-pocket
+  restart:
+    cmds:
+      - docker restart summary-pocket

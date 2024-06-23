@@ -10,7 +10,7 @@ from pydantic import BaseModel
 dotenv.load_dotenv()
 
 RETRY_NUM = 10
-GPT_MODEL_NAME = 'gpt-4-1106-preview'
+GPT_MODEL_NAME = 'gpt-4o'
 PROMPT_PATH = 'data/prompt.txt'
 OPENAI_API_TOKEN = os.environ['OPENAI_API_TOKEN']
 OPENAI_API_ORGANIZATION = os.environ['OPENAI_API_ORGANIZATION']

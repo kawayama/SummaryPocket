@@ -162,3 +162,4 @@ cython_debug/
 # Project
 .ruff_cache/
 jupyter/
+error_urls*
