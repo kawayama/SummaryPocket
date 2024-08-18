@@ -3,7 +3,7 @@ import time
 from typing import Generator
 
 import undetected_chromedriver as uc
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from selenium.webdriver.common.by import By
 
 
@@ -16,7 +16,7 @@ class SiteInfo(BaseModel):
         content (str): 本文
     """
 
-    title: str
+    title: str = Field(..., min_length=1)
     url: str
     content: str
 
@@ -43,8 +43,12 @@ def get_site_info(url: str) -> SiteInfo:
         # TODO: ここの待機時間は要調整、できればwaitを使いたい
         time.sleep(10)
 
+        title = driver.title
+        if len(title) == 0:
+            title = 'No title'
+
         return SiteInfo(
-            title=driver.title,
+            title=title,
             url=driver.current_url,
             content=body_ele.text,
         )
