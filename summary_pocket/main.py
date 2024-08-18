@@ -15,7 +15,7 @@ from summary_pocket.utils import (
 
 dotenv.load_dotenv()
 
-CHATGPT_MAX_LENGTH = 4000
+CHATGPT_MAX_LENGTH = 50000
 UNCATEGORIZED_NAME = os.environ['NOTION_UNCATEGORIZED_NAME']
 
 logger = logging.getLogger(__name__)
