@@ -31,7 +31,6 @@ def main() -> None:
         logger.error(f"Error (Notion DB): {e}")
         notification_util.notify_to_slack(
             content=f"Error (Notion DB): {e}",
-            channel='#error',
         )
         return
 
@@ -86,7 +85,6 @@ def main() -> None:
             # Slackに通知
             notification_util.notify_to_slack(
                 content=f"記事が要約されました！\nurl: {article.url}",
-                channel='#notify',
             )
 
             logger.info(f'Finish summarizing: {article.url}')
@@ -95,7 +93,6 @@ def main() -> None:
             logger.error(f"Error ({article.url}): {e}")
             notification_util.notify_to_slack(
                 content=f"Error ({article.url}): {e}",
-                channel='#error',
             )
 
             # エラーが発生したURLを保存
@@ -114,6 +111,5 @@ if __name__ == '__main__':
             time.sleep(1 * 60)
         except Exception as e:
             notification_util.notify_to_slack(
-                content=f"Error occurred and application stopped: {e}",
-                channel='#error',
+                content=f"<!channel>\nError occurred and application stopped: {e}",
             )
