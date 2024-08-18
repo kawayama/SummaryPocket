@@ -1,16 +1,16 @@
-import json
 import os
 import string
 import time
 
 import dotenv
 import openai
+from openai.types.chat import ParsedChatCompletion
 from pydantic import BaseModel
 
 dotenv.load_dotenv()
 
 RETRY_NUM = 10
-GPT_MODEL_NAME = 'gpt-4o'
+GPT_MODEL_NAME = 'gpt-4o-mini'
 PROMPT_PATH = 'data/prompt.txt'
 OPENAI_API_TOKEN = os.environ['OPENAI_API_TOKEN']
 OPENAI_API_ORGANIZATION = os.environ['OPENAI_API_ORGANIZATION']
@@ -48,16 +48,10 @@ def summarize(title: str, content: str, categories: set[str]) -> ChatGPTResponse
         organization=OPENAI_API_ORGANIZATION,
     )
     response = _execute(client, prompt)
-    result_str = _get_first_choice_str(response)
-    if result_str is None:
-        raise Exception('ChatGPT result is None')
+    response_obj = response.choices[0].message.parsed
+    assert isinstance(response_obj, ChatGPTResponse)
 
-    j = json.loads(result_str)
-
-    return ChatGPTResponse(
-        category=j['category'],
-        summary=j['summary'],
-    )
+    return response_obj
 
 
 def _generate_prompt(title: str, content: str, categories: list[str]) -> str:
@@ -106,34 +100,14 @@ def retry_wrapper(func):
 
 
 @retry_wrapper
-def _execute(client: openai.OpenAI, prompt: str):
-    return client.chat.completions.create(
+def _execute(client: openai.OpenAI, prompt: str) -> ParsedChatCompletion:
+    return client.beta.chat.completions.parse(
         model=GPT_MODEL_NAME,
         messages=[
             {'role': 'user', 'content': prompt},
         ],
-        response_format={'type': 'json_object'},
+        response_format=ChatGPTResponse,
         temperature=0,
         top_p=0,
         seed=0,
     )
-
-
-def _get_first_choice_str(response) -> str | None:
-    """ChatGPTAPIの実行結果から、最初の選択肢の文字列を取得する
-
-    Args:
-        response (openai.type.chat.ChatCompletion): ChatGPTAPIの実行結果
-
-    Returns:
-        str | None: 最初の選択肢の文字列
-    """
-    choices = response.choices
-    if len(choices) == 0:
-        return None
-
-    result_str = choices[0].message.content
-    if result_str is None:
-        return None
-
-    return result_str
