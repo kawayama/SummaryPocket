@@ -92,7 +92,7 @@ def main() -> None:
             # Slackに通知
             logger.error(f"Error ({article.url}): {e}")
             notification_util.notify_to_slack(
-                content=f"Error ({article.url}): {e}",
+                content=f"<!channel>\nError ({article.url}): {e}",
             )
 
             # エラーが発生したURLを保存
