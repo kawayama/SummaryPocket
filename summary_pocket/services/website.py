@@ -1,7 +1,10 @@
 import contextlib
+import os
+import subprocess
 import time
 from typing import Generator
 
+import markdownify
 import undetected_chromedriver as uc
 from pydantic import BaseModel, Field
 from selenium.webdriver.common.by import By
@@ -47,10 +50,13 @@ def get_site_info(url: str) -> SiteInfo:
         if len(title) == 0:
             title = 'No title'
 
+        html_content = body_ele.get_attribute('innerHTML') or ''
+        markdown_content = markdownify.markdownify(html_content)
+
         return SiteInfo(
             title=title,
             url=driver.current_url,
-            content=body_ele.text,
+            content=markdown_content,
         )
 
 
@@ -67,7 +73,8 @@ def get_driver() -> Generator[uc.Chrome, None, None]:
     try:
         options = uc.options.ChromeOptions()
         options.add_argument('--disable-dev-shm-usage')
-        driver = uc.Chrome(headless=True, use_subprocess=False, options=options, version_main=127)
+        chrome_version = _get_chrome_version()
+        driver = uc.Chrome(headless=True, use_subprocess=False, options=options, version_main=chrome_version)
         yield driver
     finally:
         try:
@@ -75,3 +82,32 @@ def get_driver() -> Generator[uc.Chrome, None, None]:
                 driver.quit()
         except Exception:
             pass
+
+
+def _get_chrome_version() -> int:
+    """Chromeのバージョンを取得する
+
+    Returns:
+        int: Chromeのバージョン
+    """
+    try:
+        if os.name == "nt":  # Windows
+            # NOTE: Windows以外ではwinregライブラリがないため、ここで読み込んでいる
+            import winreg
+
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Google\Chrome\BLBeacon")
+            version, _ = winreg.QueryValueEx(key, "version")
+        elif os.name == "posix":  # Linux と macOS
+            if os.path.exists("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"):  # macOS
+                command = r"/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version"
+            else:  # Linux
+                command = "google-chrome --version"
+            output = subprocess.check_output(command, shell=True).decode("utf-8")
+            version = output.strip().split()[-1]
+        else:
+            raise OSError("サポートされていないOSです")
+
+        return int(version.split(".")[0])  # メジャーバージョンを整数として返す
+    except Exception as e:
+        print(f"Chromeバージョンの取得に失敗しました: {e}")
+        return 127

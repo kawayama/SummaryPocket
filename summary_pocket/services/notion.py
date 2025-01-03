@@ -29,6 +29,7 @@ class NotionItem(BaseModel):
     url: str = Field(min_length=1)
     category: str = Field(min_length=1)
     summary: str = Field(min_length=1)
+    body: str = Field(min_length=1)
     fetched_at: datetime.datetime
 
 
@@ -122,6 +123,22 @@ def save(item: NotionItem) -> None:
                 },
             },
         },
+        children=[
+            {
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {
+                    "rich_text": [
+                        {
+                            "type": "text",
+                            "text": {
+                                "content": item.body,
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
     )
 
 

@@ -75,6 +75,7 @@ def main() -> None:
                     url=site_info.url,
                     category=response.category,
                     summary=response.summary,
+                    body=site_info.content,
                     fetched_at=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9), 'JST')),
                 )
             )
