@@ -123,22 +123,6 @@ def save(item: NotionItem) -> None:
                 },
             },
         },
-        children=[
-            {
-                "object": "block",
-                "type": "paragraph",
-                "paragraph": {
-                    "rich_text": [
-                        {
-                            "type": "text",
-                            "text": {
-                                "content": item.body,
-                            }
-                        }
-                    ]
-                }
-            }
-        ]
     )
 
 
